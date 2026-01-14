@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.31)
-project(dojo LANGUAGES CXX)
+project(game_of_life LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD            23)
 set(CMAKE_CXX_STANDARD_REQUIRED   ON)
@@ -21,4 +21,14 @@ FetchContent_MakeAvailable(googletest)
 # Global includes
 include(GoogleTest)
 
-add_executable(dojo src/main.cpp)
+# Targets
+add_library(logic src/gameOfLife.cpp)
+target_include_directories(logic PUBLIC src)
+
+add_executable(game_of_life src/main.cpp)
+target_link_libraries(game_of_life PRIVATE logic)
+
+add_executable(test_game_of_life tests/testGameOfLife.cpp)
+target_link_libraries(test_game_of_life PRIVATE logic GTest::gtest GTest::gtest_main)
+
+gtest_discover_tests(test_game_of_life)
