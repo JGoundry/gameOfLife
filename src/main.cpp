@@ -1,7 +1,9 @@
 #include "gameOfLife.hpp"
 
+#include <exception>
 #include <iostream>
 #include <random>
+#include <string>
 
 namespace {
 
@@ -26,17 +28,20 @@ Grid generateGrid(size_t rows, size_t cols) {
 int main(int argc, char* argv[]) {
     if (argc != 4) {
         std::println(std::cerr, "Usage: {} <rows> <cols> <iterations>", argv[0]);
+        return 1;
     }
 
-    size_t iterations = 1000;
+    size_t rows{}, cols{}, iterations{};
+    try {
+    rows = std::stoull(argv[1]);
+    cols = std::stoull(argv[2]);
+    iterations = std::stoull(argv[3]);
+    } catch ( const std::exception& e ) {
+        std::println(std::cerr, "Caught '{}' trying to convert args to nums.", e.what());
+    }
 
-    size_t rows = 100;
-    size_t cols = rows * 3;
 
-
-    Grid grid = generateGrid(rows, cols);
-
-    gameOfLife(grid, 1000);
+    gameOfLife(generateGrid(rows, cols), iterations);
 
     return 0;
 }

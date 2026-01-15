@@ -1,24 +1,18 @@
 #include "gameOfLife.hpp"
 
-#include <chrono>
 #include <cstdint>
 #include <functional>
 #include <iostream>
 #include <ranges>
-#include <thread>
 
 namespace {
-
-const bool debug = std::getenv("GOL_DEBUG");
-#define DEBUG_PRINT(msg) if (debug) std::cout << msg << '\n';
 
 using Rule = std::function<bool(bool state, size_t liveNeighbours)>;
 constexpr std::array rules = {underpopulation, nextGeneration, overpopulation,
                               reproduction};
 
 constexpr bool applyRules(bool state, size_t liveNeighbours) {
-  for (const auto& rule : rules) 
-    state = rule(state, liveNeighbours);
+  for (const auto& rule : rules) state = rule(state, liveNeighbours);
   return state;
 }
 
@@ -41,20 +35,17 @@ size_t liveNeighbours(const Grid& grid, std::int64_t row, std::int64_t col) {
   return liveNeighbours;
 }
 
-void clearScreen() {
-    std::cout << "\033[2J\033[1;1H";
-    // std::system("clear");
-}
+void clearScreen() { std::cout << "\033[2J\033[1;1H"; }
 
 void printGrid(const Grid& grid) {
-    clearScreen();
-    for (const auto& row : grid) {
-        for (const auto cell : row) {
-            std::cout << (cell ? "\u2588" : " ");
-        }
-        std::cout << '\n';
+  clearScreen();
+  for (const auto& row : grid) {
+    for (const auto cell : row) {
+      std::cout << (cell ? "\u2588" : " ");
     }
-    std::cout << std::flush;
+    std::cout << '\n';
+  }
+  std::cout << std::flush;
 }
 
 }  // namespace
@@ -95,10 +86,8 @@ Grid gameOfLife(const Grid& input, size_t iterations) {
       }
     }
     grid = std::move(newGrid);
-    if (debug) {
-        printGrid(grid);
-        // std::this_thread::sleep_for(std::chrono::milliseconds(50));
-    }
+    printGrid(grid);
   }
+
   return grid;
 }
