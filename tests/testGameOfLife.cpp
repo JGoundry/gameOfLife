@@ -12,12 +12,24 @@ struct RuleParams {
   bool expected;
 };
 
+struct GameOfLifeParams {
+  Grid input;
+  size_t iterations;
+  Grid expected;
+};
+
+class GameOfLife : public ::testing::TestWithParam<GameOfLifeParams> {};
 class RuleUnderpopulation : public ::testing::TestWithParam<RuleParams> {};
 class RuleNextGeneration : public ::testing::TestWithParam<RuleParams> {};
 class RuleOverpopulation : public ::testing::TestWithParam<RuleParams> {};
 class RuleReproduction : public ::testing::TestWithParam<RuleParams> {};
 
 }  // namespace
+
+TEST_P(GameOfLife, Full) {
+  const auto& data = GetParam();
+  EXPECT_EQ(data.expected, gameOfLife(data.input, data.iterations));
+}
 
 TEST_P(RuleUnderpopulation, Underpopulation) {
   const auto& data = GetParam();
@@ -36,21 +48,15 @@ TEST_P(RuleReproduction, Reproduction) {
   EXPECT_EQ(data.expected, reproduction(data.state, data.liveNeighbours));
 }
 
-TEST(GameOfLife, SingleIteration) {
-  const Grid input = {
-      {1, 1, 0},
-      {0, 1, 0},
-      {0, 1, 1},
-  };
-
-  const Grid output = {
-      {1, 1, 0},
-      {0, 0, 0},
-      {0, 1, 1},
-  };
-
-  EXPECT_EQ(output, gameOfLife(input, 1));
-}
+INSTANTIATE_TEST_SUITE_P(
+    , GameOfLife,
+    ::testing::Values(
+        GameOfLifeParams{.input = Grid{{1, 1, 0}, {0, 1, 0}, {0, 1, 1}},
+                         .iterations = 1,
+                         .expected = Grid{{1, 1, 0}, {0, 0, 0}, {0, 1, 1}}},
+        GameOfLifeParams{.input = Grid{{0, 0, 0}, {0, 0, 0}, {0, 0, 0}},
+                         .iterations = 1,
+                         .expected = Grid{{0, 0, 0}, {0, 0, 0}, {0, 0, 0}}}));
 
 INSTANTIATE_TEST_SUITE_P(
     , RuleUnderpopulation,
